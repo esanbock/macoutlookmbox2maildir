@@ -67,7 +67,7 @@ void main(List<String> args) {
         }
       }
 
-      if (inputText.toLowerCase().startsWith("message-id:")) {
+      if (inputText.length > 12 && inputText.toLowerCase().startsWith("message-id:")) {
         msg.id = inputText.substring(12);
       }
 
