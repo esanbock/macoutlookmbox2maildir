@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
 import 'package:http_utils/http_utils.dart';
+import 'package:args/args.dart';
 
 class Message {
   Message(String f) {
@@ -20,14 +21,26 @@ class Message {
 }
 
 int errorCount = 0;
+int messageCount = 0;
 
 void main(List<String> args) {
-  int messageCount = 0;
+
+  // parse results
+  final parser = new ArgParser()..addFlag("write-changes", negatable: false, abbr: 'w', help: "actually perform changes");
+
+  ArgResults argResults = parser.parse(args);
+  List<String> paths = argResults.rest;
+  if (paths.length == 0) {
+    printHelp();
+    return;
+  }
+
 
   print("Roll out\n");
+
   Stream input;
 
-  if (args.length == 0) input = stdin; else input = new File(args[0]).openRead();
+  if (paths.length == 1) input = stdin; else input = new File(paths[0]).openRead();
 
 
   String inputText;
@@ -64,6 +77,11 @@ void main(List<String> args) {
     }
   }).onDone(() => stdout.writeln("Processed ${messageCount} messages.  Errors found on ${errorCount} "));
 
+}
+
+void printHelp() {
+  print("macoutlook2mbox [-write-changes] [input files...] <output dir>");
+  print("if no input files specified, then pipe from input");
 }
 
 void SaveMessage(Message msg) {
