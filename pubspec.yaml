@@ -1,0 +1,5 @@
+name: macoutlook2maildir
+description: A sample command-line application
+dependencies:
+  http_utils: any
+  intl: any
