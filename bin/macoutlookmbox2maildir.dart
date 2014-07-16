@@ -40,7 +40,16 @@ void main(List<String> args) {
 
   Stream input;
 
-  if (paths.length == 1) input = stdin; else input = new File(paths[0]).openRead();
+  if (paths.length == 1){ 
+    input = stdin;
+  }
+  else{
+    input = new File(paths[0]).openRead();
+    if( paths[0].endsWith(".gz")){
+      var orig = input;
+      input = orig.transform(GZIP.decoder);
+    }
+  }
 
 
   String inputText;
