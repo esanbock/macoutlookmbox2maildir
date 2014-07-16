@@ -18,6 +18,10 @@ class Message {
     if (from != null && date != null && from != null && contents != null) return true;
     return false;
   }
+  
+  String GetFilename(){
+    return contents.hashCode.toString() + ".eml";
+  }
 }
 
 int errorCount = 0;
@@ -40,16 +44,17 @@ void main(List<String> args) {
 
   Stream input;
 
-  if (paths.length == 1){ 
+  if (paths.length == 1) {
     input = stdin;
-  }
-  else{
+  } else {
     input = new File(paths[0]).openRead();
-    if( paths[0].endsWith(".gz")){
+    if (paths[0].endsWith(".gz")) {
       var orig = input;
       input = orig.transform(GZIP.decoder);
     }
   }
+
+  String baseOutputPath = paths[paths.length - 1];
 
 
   String inputText;
@@ -60,7 +65,7 @@ void main(List<String> args) {
     if (inputText.toLowerCase().startsWith("from ") && inputText.contains("@")) {
       // save previous message
       if (msg != null) {
-        SaveMessage(msg);
+        SaveMessage(msg, baseOutputPath);
         messageCount++;
       }
       // make new message
@@ -93,9 +98,29 @@ void printHelp() {
   print("if no input files specified, then pipe from input");
 }
 
-void SaveMessage(Message msg) {
+void SaveMessage(Message msg, String basePath) {
   if (msg.isValidMessage()) {
-    stdout.writeln("message ${msg.id} from ${msg.from} written to ${msg.date.year.toString()}");
+    // put it in right folder
+    var fullPath = basePath + ".Year" + msg.date.year.toString() + "/cur";
+    Directory destination = new Directory(fullPath);
+
+    // create folder if doesn't exist
+    if (!destination.existsSync()) {
+      print("output path does not exist, creating...");
+      destination.createSync(recursive: true);
+    }
+    var fileName = fullPath + "/" + msg.GetFilename();
+    print( "about to write ${fileName}");
+    File output = new File(fileName);
+    if (output.existsSync()) {
+      print("ignoring duplicate file");
+    } else {
+      // create and write
+      output.openWrite();
+      output.writeAsStringSync(msg.contents);
+      // inform
+      stdout.writeln("message ${msg.id} from ${msg.from} written to ${msg.date.year.toString()}");
+    }
   } else {
     print("bad message!");
     errorCount++;
