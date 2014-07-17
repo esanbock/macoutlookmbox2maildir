@@ -20,7 +20,7 @@ class Message {
   }
   
   String GetFilename(){
-    return contents.hashCode.toString() + ".eml";
+    return "${contents.hashCode.toString()}.${contents.length}.eml";
   }
 }
 
@@ -65,8 +65,14 @@ void main(List<String> args) {
     if (inputText.toLowerCase().startsWith("from ") && inputText.contains("@")) {
       // save previous message
       if (msg != null) {
+        try{
         SaveMessage(msg, baseOutputPath);
-        messageCount++;
+        messageCount++;}
+        on FileSystemException catch(e)
+        {
+          errorCount++;
+          print("I/O error saving message ${e.message}");
+        }
       }
       // make new message
       msg = new Message(inputText.substring(5));
