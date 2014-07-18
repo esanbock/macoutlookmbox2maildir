@@ -62,7 +62,7 @@ void main(List<String> args) {
 
   
 
-  input.transform(LATIN1.decoder).transform(const LineSplitter()).toList().then((inputText)
+  input.transform(LATIN1.decoder).transform(const LineSplitter()).listen((inputText)
   {
 
     if (inputText.toLowerCase().startsWith("from ") && inputText.contains("@")) {
@@ -97,7 +97,7 @@ void main(List<String> args) {
     } else {
       print("skipping the stupid [${inputText}]");
     }
-  }).then((foo){
+  }).onDone((){
   stdout.writeln("Processed ${messageCount} messages.  Errors found on ${errorCount} ");
   });
 }
