@@ -123,9 +123,11 @@ void SaveMessage(Message msg, String basePath) {
     } else {
       // create and write
       output.openWrite();
-      output.writeAsStringSync(msg.contents);
+      output.writeAsString(msg.contents)
+        .then((File f){
+        stdout.writeln("message ${msg.id} from ${msg.from} written to ${msg.date.year.toString()}");
+      });
       // inform
-      stdout.writeln("message ${msg.id} from ${msg.from} written to ${msg.date.year.toString()}");
     }
   } else {
     print("bad message!");
