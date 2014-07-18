@@ -113,6 +113,7 @@ void printHelp() {
 }
 
 void SaveMessage(Message msg, String basePath) {
+  return;
   if (msg.isValidMessage()) {
     // put it in right folder
     var fullPath = basePath + ".Year" + msg.date.year.toString() + "/cur";
