@@ -60,11 +60,13 @@ void main(List<String> args) {
   String inputText;
   Message msg;
 
-  
+  StreamSubscription<String> subs;  
 
-  input.transform(LATIN1.decoder).transform(const LineSplitter()).listen((inputText)
+  var s =input.transform(LATIN1.decoder)
+      .transform(const LineSplitter());
+  subs = s.listen((inputText)
   {
-
+    subs.pause();
     if (inputText.toLowerCase().startsWith("from ") && inputText.contains("@")) {
       // save previous message
       if (msg != null) {
@@ -97,7 +99,10 @@ void main(List<String> args) {
     } else {
       print("skipping the stupid [${inputText}]");
     }
-  }).onDone((){
+    subs.resume();
+  });
+  
+  subs.onDone((){
   stdout.writeln("Processed ${messageCount} messages.  Errors found on ${errorCount} ");
   });
 }
