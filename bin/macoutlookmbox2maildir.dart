@@ -71,6 +71,7 @@ void main(List<String> args) {
       // save previous message
       if (msg != null) {
         try {
+          print( "saving ${msg.id}");
           SaveMessage(msg, baseOutputPath);
           messageCount++;
         } on FileSystemException catch (e) {
