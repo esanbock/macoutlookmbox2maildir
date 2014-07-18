@@ -18,8 +18,8 @@ class Message {
     if (from != null && date != null && from != null && contents != null) return true;
     return false;
   }
-  
-  String GetFilename(){
+
+  String GetFilename() {
     return "${contents.hashCode.toString()}.${contents.length}.eml";
   }
 }
@@ -60,16 +60,18 @@ void main(List<String> args) {
   String inputText;
   Message msg;
 
-  input.transform(LATIN1.decoder).transform(const LineSplitter()).listen((inputText) {
+  
+
+  input.transform(LATIN1.decoder).transform(const LineSplitter()).toList().then((inputText)
+  {
 
     if (inputText.toLowerCase().startsWith("from ") && inputText.contains("@")) {
       // save previous message
       if (msg != null) {
-        try{
-        SaveMessage(msg, baseOutputPath);
-        messageCount++;}
-        on FileSystemException catch(e)
-        {
+        try {
+          SaveMessage(msg, baseOutputPath);
+          messageCount++;
+        } on FileSystemException catch (e) {
           errorCount++;
           print("I/O error saving message ${e.message}");
         }
@@ -95,8 +97,8 @@ void main(List<String> args) {
     } else {
       print("skipping the stupid [${inputText}]");
     }
-  }).onDone(() => stdout.writeln("Processed ${messageCount} messages.  Errors found on ${errorCount} "));
-
+  });
+  stdout.writeln("Processed ${messageCount} messages.  Errors found on ${errorCount} ");
 }
 
 void printHelp() {
@@ -116,15 +118,14 @@ void SaveMessage(Message msg, String basePath) {
       destination.createSync(recursive: true);
     }
     var fileName = fullPath + "/" + msg.GetFilename();
-    print( "about to write ${fileName}");
+    print("about to write ${fileName}");
     File output = new File(fileName);
     if (output.existsSync()) {
       print("ignoring duplicate file");
     } else {
       // create and write
       output.openWrite();
-      output.writeAsString(msg.contents)
-        .then((File f){
+      output.writeAsString(msg.contents).then((File f) {
         stdout.writeln("message ${msg.id} from ${msg.from} written to ${msg.date.year.toString()}");
       });
       // inform
