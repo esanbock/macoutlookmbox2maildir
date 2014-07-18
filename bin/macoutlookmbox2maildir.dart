@@ -131,9 +131,11 @@ void SaveMessage(Message msg, String basePath) {
       print("ignoring duplicate file");
     } else {
       // create and write
-      output.openWrite();
+      var ioSink = output.openWrite();
       output.writeAsString(msg.contents).then((File f) {
+        ioSink.close();
         stdout.writeln("message ${msg.id} from ${msg.from} written to ${msg.date.year.toString()}");
+        
       });
       // inform
     }
