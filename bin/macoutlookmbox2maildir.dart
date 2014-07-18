@@ -97,8 +97,9 @@ void main(List<String> args) {
     } else {
       print("skipping the stupid [${inputText}]");
     }
-  });
+  }).then((foo){
   stdout.writeln("Processed ${messageCount} messages.  Errors found on ${errorCount} ");
+  });
 }
 
 void printHelp() {
