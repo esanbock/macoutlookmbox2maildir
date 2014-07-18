@@ -64,10 +64,8 @@ void main(List<String> args) {
   var s =input.transform(LATIN1.decoder)
       .transform(const LineSplitter());
   
-  //s.forEach((inputText)
+  s.forEach((inputText)
     //s.listen((inputText)
-  var s2 = s.take(1);
-  s2.listen((inputText)
   {
     
     if (inputText.toLowerCase().startsWith("from ") && inputText.contains("@")) {
