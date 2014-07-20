@@ -86,7 +86,7 @@ void main(List<String> args) {
 
     if (msg != null) {
 
-      if (inputText.toLowerCase().startsWith("date:")) {
+      if (inputText.toLowerCase().startsWith("date:") && inputText.length > 8) {
         var parsedDate = ParseDate(inputText.substring(6));
         if (parsedDate != null) {
           msg.date = parsedDate;
