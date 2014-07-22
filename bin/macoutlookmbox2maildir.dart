@@ -60,52 +60,60 @@ void main(List<String> args) {
   String inputText;
   Message msg;
 
-
-  var s =input.transform(LATIN1.decoder)
-      .transform(const LineSplitter());
-  
-  s.forEach((inputText)
-    //s.listen((inputText)
-  {
-    
-    if (inputText.toLowerCase().startsWith("from ") && inputText.contains("@")) {
-      // save previous message
-      if (msg != null) {
-        try {
-          print( "saving ${msg.id}");
-          SaveMessage(msg, baseOutputPath);
-          messageCount++;
-        } on FileSystemException catch (e) {
-          errorCount++;
-          print("I/O error saving message ${e.message}");
-        }
-      }
-      // make new message
-      msg = new Message(inputText.substring(5));
+  if (input is Stdin) {
+    inputText = input.readLineSync();
+    while (inputText != null) {
+      processLine(inputText, msg, baseOutputPath);
+      inputText = input.readLineSync();
     }
+  } else {
+    var s = input.transform(LATIN1.decoder).transform(const LineSplitter());
+    s.forEach((inputText) {
+      processLine(inputText, msg, baseOutputPath);
+    });
+  }
 
+
+  stdout.writeln("Processed ${messageCount} messages.  Errors found on ${errorCount} ");
+  ;
+}
+
+void processLine(String inputText, Message msg, String baseOutputPath) {
+
+  if (inputText.toLowerCase().startsWith("from ") && inputText.contains("@")) {
+    // save previous message
     if (msg != null) {
-
-      if (inputText.toLowerCase().startsWith("date:") && inputText.length > 8) {
-        var parsedDate = ParseDate(inputText.substring(6));
-        if (parsedDate != null) {
-          msg.date = parsedDate;
-        }
+      try {
+        print("saving ${msg.id}");
+        SaveMessage(msg, baseOutputPath);
+        messageCount++;
+      } on FileSystemException catch (e) {
+        errorCount++;
+        print("I/O error saving message ${e.message}");
       }
-
-      if (inputText.length > 12 && inputText.toLowerCase().startsWith("message-id:")) {
-        msg.id = inputText.substring(12);
-      }
-
-      msg.contents += inputText + "\n";
-    } else {
-      print("skipping the stupid [${inputText}]");
     }
-   
-  });
-  
-  
-  stdout.writeln("Processed ${messageCount} messages.  Errors found on ${errorCount} ");;
+    // make new message
+    msg = new Message(inputText.substring(5));
+  }
+
+  if (msg != null) {
+
+    if (inputText.toLowerCase().startsWith("date:") && inputText.length > 8) {
+      var parsedDate = ParseDate(inputText.substring(6));
+      if (parsedDate != null) {
+        msg.date = parsedDate;
+      }
+    }
+
+    if (inputText.length > 12 && inputText.toLowerCase().startsWith("message-id:")) {
+      msg.id = inputText.substring(12);
+    }
+
+    msg.contents += inputText + "\n";
+  } else {
+    print("skipping the stupid [${inputText}]");
+  }
+
 }
 
 void printHelp() {
@@ -135,7 +143,7 @@ void SaveMessage(Message msg, String basePath) {
       output.writeAsString(msg.contents).then((File f) {
         ioSink.close();
         stdout.writeln("message ${msg.id} from ${msg.from} written to ${msg.date.year.toString()}");
-        
+
       });
       // inform
     }
