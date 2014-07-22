@@ -26,12 +26,13 @@ class Message {
 
 int errorCount = 0;
 int messageCount = 0;
+Message msg;
 
 void main(List<String> args) {
 
   // parse results
   final parser = new ArgParser()..addFlag("write-changes", negatable: false, abbr: 'w', help: "actually perform changes");
-
+    
   ArgResults argResults = parser.parse(args);
   List<String> paths = argResults.rest;
   if (paths.length == 0) {
@@ -58,18 +59,18 @@ void main(List<String> args) {
 
 
   String inputText;
-  Message msg;
+
 
   if (input is Stdin) {
     inputText = input.readLineSync(encoding:LATIN1, retainNewlines:false);
     while (inputText != null) {
-      processLine(inputText, msg, baseOutputPath);
+      processLine(inputText, baseOutputPath);
       inputText = input.readLineSync(encoding:LATIN1, retainNewlines:false);
     }
   } else {
     var s = input.transform(LATIN1.decoder).transform(const LineSplitter());
-    s.forEach((inputText) {
-      processLine(inputText, msg, baseOutputPath);
+    s.listen((inputText) {
+      processLine(inputText, baseOutputPath);
     });
   }
 
@@ -78,7 +79,7 @@ void main(List<String> args) {
   ;
 }
 
-void processLine(String inputText, Message msg, String baseOutputPath) {
+void processLine(String inputText, String baseOutputPath) {
 
   if (inputText.toLowerCase().startsWith("from ") && inputText.contains("@")) {
     // save previous message
