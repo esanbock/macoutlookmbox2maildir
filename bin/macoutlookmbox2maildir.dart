@@ -61,10 +61,10 @@ void main(List<String> args) {
   Message msg;
 
   if (input is Stdin) {
-    inputText = input.readLineSync();
+    inputText = input.readLineSync(encoding:LATIN1);
     while (inputText != null) {
       processLine(inputText, msg, baseOutputPath);
-      inputText = input.readLineSync();
+      inputText = input.readLineSync(encoding:LATIN1);
     }
   } else {
     var s = input.transform(LATIN1.decoder).transform(const LineSplitter());
