@@ -141,12 +141,9 @@ void SaveMessage(Message msg, String basePath) {
     } else {
       // create and write
       var ioSink = output.openWrite();
-      output.writeAsString(msg.contents).then((File f) {
+      output.writeAsStringSync(msg.contents);
         ioSink.close();
         stdout.writeln("message ${msg.id} from ${msg.from} written to ${msg.date.year.toString()}");
-
-      });
-      // inform
     }
   } else {
     print("bad message!");
